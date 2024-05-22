@@ -8,8 +8,11 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import Runnable, RunnablePassthrough
 from langchain.chains.combine_documents import create_stuff_documents_chain
 
-from hyde4lc.prompts import default_hyde_prompt_template, defualt_query_prompt_template
+from hyde4lc.prompts import default_hyde_prompt_template
 
+def print_hyd(x):
+    print(x)
+    return x
 
 def create_hyde_chain(
     llm: BaseLanguageModel,
@@ -28,7 +31,7 @@ def create_hyde_chain(
             context=(
                 RunnablePassthrough()
                 | (hyde_prompt_template | llm).with_config(run_name="generate_hyp_doc")
-                | StrOutputParser()
+                | StrOutputParser() | print_hyd
                 | retriever.with_config(run_name="retrieve_doc_with_hyd")
             ).with_config(run_name="retrieve")
         ).with_config(run_name="hyde_chain")
